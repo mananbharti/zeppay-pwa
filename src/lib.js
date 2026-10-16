@@ -1,7 +1,8 @@
 // Pure helpers: UPI parsing, USSD building, validation, formatting.
 export const MAX_AMOUNT = 5000;
 export const MIN_AMOUNT = 1;
-export const USSD_SEND = '*99*1*3#';
+export const USSD_SEND = '*99*1*3#'; // send money to a UPI ID
+export const USSD_MOBILE = '*99*1*1#'; // send money to a mobile number
 export const USSD_BALANCE = '*99*3#';
 export const USSD_MENU = '*99#';
 
@@ -62,11 +63,15 @@ export function carrierSupported(id) {
   return c ? c.ok : true;
 }
 
-export function makeRef(now = Date.now(), rnd = Math.random) {
-  const d = new Date(now);
-  const p = (n) => String(n).padStart(2, '0');
-  const tail = Math.floor(rnd() * 1e6).toString().padStart(6, '0');
-  return `ZP${String(d.getFullYear()).slice(2)}${p(d.getMonth() + 1)}${p(d.getDate())}${tail}`;
+export function isValidMobile(v) {
+  return /^[6-9]\d{9}$/.test(String(v || '').replace(/[\s-]/g, '').replace(/^(\+91|91|0)(?=\d{10}$)/, ''));
+}
+export function normMobile(v) {
+  return String(v || '').replace(/[\s-]/g, '').replace(/^(\+91|91|0)(?=\d{10}$)/, '');
+}
+
+export function newId(now = Date.now(), rnd = Math.random) {
+  return now.toString(36) + Math.floor(rnd() * 1e6).toString(36);
 }
 
 export function upiLink({ vpa, name, amount, note }) {
@@ -95,4 +100,10 @@ export function groupByDay(items, now = Date.now()) {
     g.items.push(it);
   }
   return out;
+}
+
+// Hands a tel: or upi: link to the OS. Tests can set window.__zepNavigate to capture it.
+export function navigate(url) {
+  if (typeof window !== 'undefined' && typeof window.__zepNavigate === 'function') window.__zepNavigate(url);
+  else window.location.href = url;
 }

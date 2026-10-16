@@ -1,59 +1,57 @@
-# ZepPay
+# ZepPay web app
 
-Offline UPI payments over `*99#`. An installable PWA with a built-in demo mode, so you can try the whole flow without touching a bank.
+Offline UPI payments over `*99#`, as an installable web app (PWA). It lines up the payment and hands it to your bank: either the `*99#` service on your SIM (no internet) or your UPI app (GPay, PhonePe, Paytm and so on). The payment itself is always completed by your bank.
 
-**Live app:** https://mananbharti.github.io/zeppay-pwa/
+Live: https://mananbharti.github.io/zeppay-pwa/
 
 <p align="center">
-  <img src="docs/screenshots/02-home.png" width="200" />
-  <img src="docs/screenshots/03-pay.png" width="200" />
-  <img src="docs/screenshots/04-pin.png" width="200" />
-  <img src="docs/screenshots/05-success.png" width="200" />
+  <img src="docs/screenshots/02-home.png" width="190" />
+  <img src="docs/screenshots/03-pay.png" width="190" />
+  <img src="docs/screenshots/08-dialer.png" width="190" />
+  <img src="docs/screenshots/06-receipt.png" width="190" />
 </p>
 <p align="center">
-  <img src="docs/screenshots/07-history.png" width="200" />
-  <img src="docs/screenshots/10-myqr.png" width="200" />
-  <img src="docs/screenshots/11-settings.png" width="200" />
-  <img src="docs/screenshots/13-home-dark.png" width="200" />
+  <img src="docs/screenshots/01b-banklink.png" width="190" />
+  <img src="docs/screenshots/11-help.png" width="190" />
+  <img src="docs/screenshots/07-history.png" width="190" />
+  <img src="docs/screenshots/14-home-dark.png" width="190" />
 </p>
 
-## What it does
+## Features
 
-- **Scan any UPI QR** with the camera, or upload a QR image, or paste a UPI ID / `upi://` link
-- **Pay flow** with payee check, amount limits (Rs 1 to Rs 5,000, the `*99#` cap) and a confirm step
-- **Demo mode** (default): simulated `*99#` session, UPI PIN pad, demo wallet, success and failure paths. Nothing touches a bank
-- **Live mode**: copies the UPI ID and opens your dialer with `*99*1*3#` (pay) or `*99*3#` (balance). Your bank handles the real payment
-- **My QR** to receive money, receipts, history grouped by day (last 200, on-device only)
-- **Auto / Light / Dark** appearance, carrier picker (Jio doesn't support `*99#` and live payments are blocked for it)
-- Works fully offline once loaded, installs to the home screen
+- **Bank-link guide**: the one-time `*99#` setup, in onboarding, Help and Settings
+- **Scan QR to pay**: live camera scan, upload a QR image, or paste a UPI ID or `upi://` link
+- **Pay to a UPI ID or a mobile number**
+- **Pay with your UPI app**: opens a real `upi://pay` link with payee, name, amount and note filled in. You confirm and enter your PIN in the UPI app
+- **Pay offline with `*99#`**: copies the UPI ID or number, then opens your dialer with `*99*1*3#` (UPI ID) or `*99*1*1#` (mobile number). No data needed
+- **Check balance**: opens `*99*3#`
+- **History**: every payment you start, saved on the device. When you return from the dialer or UPI app, ZepPay asks if it went through
+- **Help and FAQ**, install to home screen, Auto / Light / Dark theme, carrier picker (Jio doesn't support `*99#`, so offline payments are switched off for it)
+- Works offline once loaded
 
-## Privacy
+## What ZepPay can and can't do
 
-Everything stays in `localStorage` on your device. The UPI PIN is held in memory only for the length of a session and never saved. No analytics, no accounts, no servers.
+A web page can't move money or read your bank's reply. So ZepPay never claims a payment succeeded: the status in History is what you confirm. Your UPI PIN is entered in the dialer or UPI app only. ZepPay never sees or stores it. Everything is kept in `localStorage` on your device. No analytics, no accounts, no servers.
 
 ## Run it
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
+npm run dev
 npm run build && npm run preview
 ```
 
 ## Tests
 
 ```bash
-npm test           # unit tests (UPI parsing, validation, formatting)
-npm run build && npm run e2e   # 44 browser checks in headless Chrome
+npm test                        # unit tests: UPI parsing, validation, USSD codes
+npm run build && npm run e2e    # 52 browser checks in headless Chrome
 ```
 
-The e2e suite covers onboarding, the full pay flow, wrong-PIN failure, balance, QR decode from an image, My QR, theme switching, Jio blocking, live-mode handoff, service worker and offline load. Set `CHROME=/path/to/chrome` if Chrome isn't at `/usr/bin/google-chrome`, and `SHOTS=1` to regenerate the screenshots.
+The browser suite drives the whole app: onboarding, UPI ID and mobile entry, the exact `upi://pay` link and `tel:` codes that get opened, clipboard copy, outcome prompt on return, history, QR decode from an image, help, theme, Jio blocking, layout overflow, service worker and offline load. Set `CHROME=/path/to/chrome` if Chrome isn't at `/usr/bin/google-chrome`, `SHOTS=1` to regenerate screenshots, `TARGET_URL=...` to test a deployed copy.
 
 ## Stack
 
-React 19, Vite, jsQR, qrcode, hand-written service worker. No UI kit.
+React, Vite, jsQR, hand-written service worker, Inter. No UI kit.
 
-## Notes
-
-Independent side project, not a registered payment service. UPI is a trademark of NPCI. The idea of a friendlier front end for `*99#` is shared with the open-source [OffPay](https://github.com/laksh-ya/OffPayApp); ZepPay is a separate codebase and design.
-
-MIT License.
+UPI is a trademark of NPCI. Independent project, not a registered payment service.
