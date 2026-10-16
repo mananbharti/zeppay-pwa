@@ -3,8 +3,8 @@ import QRCode from 'qrcode';
 import fs from 'node:fs';
 import { spawn } from 'node:child_process';
 
-const PORT = 4179, URL = `http://localhost:${PORT}/`;
-const srv = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
+const PORT = 4179, URL = process.env.TARGET_URL || `http://localhost:${PORT}/`;
+const srv = process.env.TARGET_URL ? { kill(){} } : spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
 await new Promise((r) => setTimeout(r, 2500));
 const SHOTS = process.env.SHOTS === '1';
 const b = await puppeteer.launch({ executablePath: process.env.CHROME || '/usr/bin/google-chrome', args: ['--no-sandbox', '--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'], headless: 'new' });
